@@ -1,0 +1,5 @@
+python3 PDFsmgGUI.py
+python PDFsmgGUI.py
+
+pip3 install PyPDF2
+pip install PyPDF2
