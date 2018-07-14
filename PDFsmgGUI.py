@@ -159,9 +159,49 @@ def load_file(label):
                                            ("All files", "*.*")))
     label.set(file)
 
-def load_dir(dir):
+def load_dir(dir, sort="0", listbox=None):
     path = filedialog.askdirectory()
     dir.set(path)
+
+    if listbox != None:
+        listbox.delete(0, END)
+        pdfs = []
+        for file in os.listdir(path):
+            if os.path.isdir(file) or file.startswith("."):
+                continue
+            if file.endswith(".pdf"):
+                pdfs.append(file)
+
+        bsort = False
+        if sort == 1:
+            bsort = True
+
+        pdfs.sort(reverse=bsort)
+
+        for pdf in pdfs:
+            listbox.insert(END, pdf)
+
+def reverseList(dir, sort, listbox=None):
+    dir_str = dir.get()
+    if dir_str != "":
+        if listbox != None:
+            listbox.delete(0, END)
+            pdfs = []
+            for file in os.listdir(dir_str):
+                if os.path.isdir(file) or file.startswith("."):
+                    continue
+                if file.endswith(".pdf"):
+                    pdfs.append(file)
+
+            bsort = False
+            if sort == 1:
+                bsort = True
+
+            pdfs.sort(reverse=bsort)
+
+            for pdf in pdfs:
+                listbox.insert(END, pdf)
+    pass
 
 def toggleGenerate():
     print("toggleGenerate")
@@ -251,17 +291,21 @@ def setMergeFrame():
 
     dir = StringVar()
     dir_label = Label(mergeFrame, textvariable=dir)
+    listbox = Listbox(mergeFrame)
 
-    b1 = Button(mergeFrame, text="Browse", command=lambda: load_dir(dir))
+    b1 = Button(mergeFrame, text="Browse", command=lambda: load_dir(dir, sort=sort_var.get(), listbox=listbox))
     b1.grid(row=0, column=1)
     dir_label.grid(row=0, column=2)
 
     sort_var = IntVar()
-    Checkbutton(mergeFrame, text="내림차순", variable=sort_var).grid(row=1, columnspan=3)
+    Checkbutton(mergeFrame, text="내림차순", variable=sort_var, command=lambda: reverseList(dir, sort_var.get(), listbox=listbox)).grid(row=1, columnspan=3)
 
 
     m_btn = Button(mergeFrame, text="Merge", bg="green", fg="black", command=lambda: checkMerge(dir, sort_var))
     m_btn.grid(row=2, columnspan=3)
+
+    listbox.grid(row=3, columnspan=3)
+    # listbox.insert(END, "a list entry")
 
 def setSplitFrame():
     label_file1_str = StringVar()
